@@ -46,9 +46,9 @@ async def getSqlite(value):
                      "\n\n**移除监控频道**:\n `,jdCommand monitor-del <频道/组,ID>`"
                      "\n\n**打开监控调试**:\n `,jdCommand debug on/off`"
                      "\n\n**设置接收命令bot**:\n `,jdCommand bot`"
-                     "\n\n**查询监控命令**:\n `,jdCommand code-search <字符串>"
-                     "\n\n**设置监控命令**:\n `,jdCommand code-set {k:监控关键字，v:执行的命令}"
-                     "\n\n**删除监控命令**:\n `,jdCommand code-del <k:关键字>\n")
+                     "\n\n**查询监控命令**:\n `,jdCommand code-search <字符串>`"
+                     "\n\n**设置监控命令**:\n `,jdCommand code-set {k:监控关键字，v:执行的命令}`"
+                     "\n\n**删除监控命令**:\n `,jdCommand code-del <k:关键字>`\n")
 async def config(message: Message):
     cMD = message.parameter[0]
     cId = ''
