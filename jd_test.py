@@ -10,7 +10,7 @@ import re
 
 # ⚠ 容器Bot ID 或 用户名（推荐用户名）
 # USER_BOT = 1234567890 或 USER_BOT = "xxxxxx_bot"，注意如果是id不要带引号
-USER_BOT = "1234567890"
+USER_BOT = "5659441760"
 # 调试模式
 DEBUG_MODE = True
 commandDB = 'jdCommand'
@@ -30,8 +30,8 @@ async def debugMode(msg):
         return
 
 
-async def infoLog(msg):
-    await bot.send_message(USER_BOT, getTimes('%Y-%m-%d %H:%M:%S') + f"\n info: \n{msg}")
+async def infoLog(msg, _bot):
+    await bot.send_message(_bot, getTimes('%Y-%m-%d %H:%M:%S') + f"\n info: \n{msg}")
 
 
 async def getSqlite(value):
@@ -167,12 +167,11 @@ async def config(message: Message):
 async def forward_message(message: Message):
     try:
         if message.chat:
-            # await debugMode(f'message.chat.name={message.chat.title},message.chat.id={message.chat.id}')
+            await debugMode(f'message.chat.name={message.chat.title},message.chat.id={message.chat.id}')
             fId = await getSqlite(f'monitor')
             if str(message.chat.id) in fId:
                 text = message.text
-                results = await filters(text)
-                # await log(f",resultsjj ：{str(results)}")  # 打印日志
+                await filters(text)
             else:
                 await debugMode(f'message.chat.id={message.chat.id},fId={fId}')
     except Exception as e:
@@ -182,23 +181,31 @@ async def forward_message(message: Message):
 
 # 查看是否需要发送指令，过滤无效信息
 async def filters(text):
-    code = ''
     try:
         if "task env edit " in text or "export" in text:
             await log(f",text ：{text}")  # 打印日志
             dId = await getSqlite(f'code')
             _bot = await getSqlite(f'bot')
-            # await log(f",dId ：{dId}")  # 打印日志
-            all = str(text).replace('export ','')
-            all = str(all).replace('="','----')
-            all = str(all).replace('"','')
+            all = str(text).replace('export ', '')
+            all = str(all).replace('="', '----')
+            # 以防最后一个双引号后面还有内容
+            all = all.split('"')[0] + '"'
+            all = str(all).replace('"', '')
             _code = all.split('----')[0]
             _url = all.split('----')[1]
-            if _code in dId.keys():
-                cmd = str(dId[_code]).replace('$url$',_url)
-                # await log(f",dId-_code ：{dId[_code]}")  # 打印日志
-                await infoLog(f",找到对应指令：{cmd},发送到机器人")  # 打印日志
+            if None is _bot:
+                await edit_delete(text, f"❌ bot机器人未设置！")
+                return
+            if str(_code) in dId.keys():
+                cmd = str(dId[_code]).replace('$url$', _url)
+                await infoLog(f",找到对应指令：{cmd},发送到机器人", _bot)  # 打印日志
                 await bot.send_message(_bot, cmd)
+            else:
+                await infoLog(f",未找到对应指令：[{_code}]", _bot)  # 打印日志
+        elif 'https' in text:
+            all = text.split('https')
+            _bot = await getSqlite(f'bot')
+            await infoLog(f",找到需要解析的url：[{all[0]}],[{all[1]}]", _bot)  # 打印日志
     except Exception as e:
         errorMsg = f"❌ 第{e.__traceback__.tb_lineno}行：{e}"
         await debugMode(errorMsg)
