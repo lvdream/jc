@@ -1,0 +1,29 @@
+,jdCommand code-set {"k":"jd_cjhy_activityId","v":"/cmd task env edit jd_cjhy_activityId $url$ >/dev/null 2>&1 && task own/KingRan_KR/jd_cjzdgf.js now"}
+,jdCommand code-set {"k":"LUCK_DRAW_URL","v":"/cmd task env edit LUCK_DRAW_URL $url$ >/dev/null 2>&1 && task own/KingRan_KR/jd_luck_draw.js now"}
+,jdCommand code-set {"k":"jd_daily_activityId","v":"/cmd task env edit jd_daily_activityId $url$ >/dev/null 2>&1 && task own/KingRan_KR/jd_daily.js now"}
+,jdCommand code-set {"k":"jd_wxShopFollowActivity_activityUrl","v":"/cmd task env edit jd_wxShopFollowActivity_activityUrl $url$ >/dev/null 2>&1 && task own/KingRan_KR/jd_wxShopFollowActivity.js now"}
+,jdCommand code-set {"k":"jd_wxCollectionActivity_activityUrl","v":"/cmd task env edit jd_wxCollectionActivity_activityUrl $url$ >/dev/null 2>&1 && task own/KingRan_KR/jd_wxCollectionActivity.js now"}
+,jdCommand code-set {"k":"jd_wxMcLevelAndBirthGifts_activityId","v":"/cmd task env edit jd_wxMcLevelAndBirthGifts_activityId $url$ >/dev/null 2>&1 && task own/KingRan_KR/jd_wxBuildActivity.js now"}
+,jdCommand code-set {"k":"jd_lzkj_loreal_cart_url","v":"/cmd task env edit jd_lzkj_loreal_cart_url $url$ >/dev/null 2>&1 && task own/KingRan_KR/jd_lzkj_loreal_cart.js now"}
+,jdCommand code-set {"k":"jd_wxCompleteInfoId","v":"/cmd task env edit jd_wxCompleteInfoId $url$ >/dev/null 2>&1 && task own/KingRan_KR/jd_completeInfoActivity.js now"}
+,jdCommand code-set {"k":"DPLHTY","v":"/cmd task env edit DPLHTY $url$ >/dev/null 2>&1 && task own/KingRan_KR/jd_opencardDPLHTY.js now"}
+,jdCommand code-set {"k":"jd_sevenDay_activityUrl","v":"/cmd task env edit LZKJ_SEVENDAY $url$ >/dev/null 2>&1 && task own/KingRan_KR/jd_sevenDay.js now"}
+,jdCommand code-set {"k":"jd_wxBuildActivity_activityId","v":"/cmd task env edit jd_wxBuildActivity_activityId $url$ >/dev/null 2>&1 && task own/KingRan_KR/jd_wxBuildActivity.js now"}
+
+,jdCommand code-set {"k":"jd_lzkjInteractUrl","v":"/cmd task env edit jd_lzkj_loreal_invite_url $url$ >/dev/null 2>&1 && task own/shufflewzc_faker2/jd_lzkjInteract.py now"}
+,jdCommand code-set {"k":"jd_wxShopGift_activityUrl","v":"/cmd task env edit jd_wxShopGift_activityUrl $url$ >/dev/null 2>&1 && task own/KingRan_KR/jd_wxShopGift.js now"}
+
+,jdCommand code-set {"k":"jd_wxKnowledgeActivity_activityId","v":"/cmd task env edit jd_wxKnowledgeActivity_activityId $url$ >/dev/null 2>&1 && task own/KingRan_KR/jd_wxKnowledgeActivity.js now"}
+,jdCommand code-set {"k":"jd_wxSecond_activityId","v":"/cmd task env edit jd_wxSecond_activityId $url$ >/dev/null 2>&1 && task own/KingRan_KR/jd_wxSecond.js now"}
+,jdCommand code-set {"k":"JD_Lottery","v":"/cmd task env edit JD_Lottery $url$ >/dev/null 2>&1 && task own/KingRan_KR/jd_lottery.js now"}
+,jdCommand code-set {"k":"jd_wxCartKoi_activityId","v":"/cmd task env edit jd_wxCartKoi_activityId $url$ >/dev/null 2>&1 && task own/KingRan_KR/jd_wxCartKoi.js now"}
+,jdCommand code-set {"k":"jd_wxShareActivity_activityId","v":"/cmd task env edit jd_wxShareActivity_activityId $url$ >/dev/null 2>&1 && task own/KingRan_KR/jd_wxShareActivity.js now"}
+,jdCommand code-set {"k":"jd_sevenDay_activityUrl","v":"/cmd task env edit LZKJ_SEVENDAY $url$ >/dev/null 2>&1 && task own/KingRan_KR/jd_sevenDay.js now"}
+,jdCommand code-set {"k":"jd_joinCommonId","v":"/cmd task env edit jd_joinCommonId $url$ >/dev/null 2>&1 && task own/shufflewzc_faker2/jd_joinCommon_opencard.py now"}
+,jdCommand code-set {"k":"jd_lottery_activityUrl","v":"/cmd task env edit jd_txzj_lottery_id $url$ >/dev/null 2>&1 && task own/shufflewzc_faker2/jd_txzj_lottery.js now"}
+,jdCommand code-set {"k":"M_WX_TEAM_URL","v":"/cmd task env edit M_WX_TEAM_URL $url$ >/dev/null 2>&1 && task own/shufflewzc_faker2/m_jd_wx_team.js now"}
+,jdCommand code-set {"k":"M_WX_LUCK_DRAW_URL","v":"/cmd task env edit M_WX_LUCK_DRAW_URL $url$ >/dev/null 2>&1 && task own/shufflewzc_faker2/m_jd_wx_luckDraw.js now"}
+
+,jdCommand code-search
+
+
