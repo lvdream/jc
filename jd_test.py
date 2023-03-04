@@ -170,7 +170,7 @@ async def config(message: Message):
                 _codes = list(_timer.keys())
                 for i in range(len(_codes)):
                     _codeQueue = await getSqlite(f'{_codes[i]}')
-                    _msg += f'队列[{_codes[i]},长度[{len(list(_codeQueue))}]]\n'
+                    _msg += f'队列[{_codes[i]},长度[{len(list(_codeQueue))}],更新时间[{_timer[_codes[i]]}]]\n'
             await edit_delete(message, f"{_msg}", 100)
         except Exception as e:
             await log(f"❌ 第{e.__traceback__.tb_lineno}行：{e}")  # 打印日志
@@ -236,11 +236,13 @@ async def addQueue(code, cmd):
         _timer = {f"{code}": f"{getTimes('%Y-%m-%d %H:%M:%S')}"}
     else:
         if code not in _timer.keys():
-            _timer[f"{code}"] = getTimes('%Y-%m-%d %H:%M:%S')
+            _time_02 = datetime.strptime(getTimes("%Y-%m-%d %H:%M:%S"), "%Y-%m-%d %H:%M:%S")
+            minutes_after_10 = _time_02 - timedelta(minutes=10)
+            _timer[f"{code}"] = minutes_after_10.strptime("%Y-%m-%d %H:%M:%S")
     sqlite[f"{commandDB}.timer"] = _timer
     if None is _codeQueue:
         _codeQueue = []
-        sqlite[f"{commandDB}.{code}_timer"] = getTimes('%Y-%m-%d %H:%M:%S')
+        # sqlite[f"{commandDB}.{code}_timer"] = getTimes('%Y-%m-%d %H:%M:%S')
     _codeQueue.append(cmd)  # 追加命令
     sqlite[f"{commandDB}.{code}"] = _codeQueue
     await log(f",jdCommand _timer ：添加成功")  # 打印日志
@@ -278,13 +280,14 @@ async def checkScheduled_job():
                             cTask = _codeQueue[0]
                             _bot = await getSqlite(f'bot')
                             await bot.send_message(_bot, cTask)
-                            del _codeQueue[0]
+                            _codeQueue.pop(0)
                             _timer[_codes[i]] = getTimes("%Y-%m-%d %H:%M:%S")
                             sqlite[f"{commandDB}.timer"] = _timer
+                            sqlite[f"{commandDB}.{_codes[i]}"] = _codeQueue
                         # await bot.send_message(_bot, cTask)
                         # del _codeQueue[0]
                     elif None is not _codeQueue and len(_codeQueue) == 0:
-                        _timer.remove(_codes[i])
+                        _timer.pop(_codes[i])
                         sqlite[f"{commandDB}.timer"] = _timer
             # await log(f",jdCommand _timer ：{_timer}")  # 打印日志
     except Exception as e:
