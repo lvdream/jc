@@ -229,24 +229,27 @@ async def filters(text):
 # @code 执行的代码
 # @cmd 执行的命令
 async def addQueue(code, cmd):
-    # 获取当前队列的长度
-    _codeQueue = await getSqlite(f'{code}')
-    _timer = await getSqlite(f'timer')
-    if None is _timer:
-        _timer = {f"{code}": f"{getTimes('%Y-%m-%d %H:%M:%S')}"}
-    else:
-        if code not in _timer.keys():
-            _time_02 = datetime.strptime(getTimes("%Y-%m-%d %H:%M:%S"), "%Y-%m-%d %H:%M:%S")
-            minutes_after_10 = _time_02 - timedelta(minutes=10)
-            _timer[f"{code}"] = minutes_after_10.strptime("%Y-%m-%d %H:%M:%S")
-    sqlite[f"{commandDB}.timer"] = _timer
-    if None is _codeQueue:
-        _codeQueue = []
-        # sqlite[f"{commandDB}.{code}_timer"] = getTimes('%Y-%m-%d %H:%M:%S')
-    _codeQueue.append(cmd)  # 追加命令
-    sqlite[f"{commandDB}.{code}"] = _codeQueue
-    await log(f",jdCommand _timer ：添加成功")  # 打印日志
-
+    try:
+        # 获取当前队列的长度
+        _codeQueue = await getSqlite(f'{code}')
+        _timer = await getSqlite(f'timer')
+        if None is _timer:
+            _timer = {f"{code}": f"{getTimes('%Y-%m-%d %H:%M:%S')}"}
+        else:
+            if code not in _timer.keys():
+                _time_02 = datetime.strptime(getTimes("%Y-%m-%d %H:%M:%S"), "%Y-%m-%d %H:%M:%S")
+                minutes_after_10 = _time_02 - timedelta(minutes=10)
+                _timer[f"{code}"] = minutes_after_10.strftime("%Y-%m-%d %H:%M:%S")
+                # await log(f",jdCommand _timer ：{_time_02}, {minutes_after_10}")  # 打印日志
+        sqlite[f"{commandDB}.timer"] = _timer
+        if None is _codeQueue:
+            _codeQueue = []
+            # sqlite[f"{commandDB}.{code}_timer"] = getTimes('%Y-%m-%d %H:%M:%S')
+        _codeQueue.append(cmd)  # 追加命令
+        sqlite[f"{commandDB}.{code}"] = _codeQueue
+        await log(f",jdCommand _timer ：添加成功")  # 打印日志
+    except Exception as e:
+        await log(f"❌ 第{e.__traceback__.tb_lineno}行：{e}")  # 打印日志
 
 @scheduler.scheduled_job("interval", seconds=5)
 async def checkScheduled_job():
