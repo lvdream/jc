@@ -1,4 +1,4 @@
-from pagermaid import bot, log
+from pagermaid import bot, log, scheduler
 from pagermaid.single_utils import sqlite
 from pagermaid.enums import Message
 from pagermaid.utils import lang, edit_delete
@@ -46,6 +46,7 @@ async def getSqlite(value):
                      "\n\n**移除监控频道**:\n `,jdCommand monitor-del <频道/组,ID>`"
                      "\n\n**打开监控调试**:\n `,jdCommand debug on/off`"
                      "\n\n**设置接收命令bot**:\n `,jdCommand bot`"
+                     "\n\n**查看当前队列**:\n `,jdCommand queue`"
                      "\n\n**查询监控命令**:\n `,jdCommand code-search <字符串>`"
                      "\n\n**设置监控命令**:\n `,jdCommand code-set {k:监控关键字，v:执行的命令}`"
                      "\n\n**删除监控命令**:\n `,jdCommand code-del <k:关键字>`\n")
@@ -161,6 +162,18 @@ async def config(message: Message):
         kId.pop(_cid['k'])
         sqlite[f"{commandDB}.code"] = kId
         await edit_delete(message, f"✅ code {_cid['k']}.已清除")
+    elif cMD == "queue":
+        try:
+            _timer = await getSqlite(f'timer')
+            _msg = '队列信息如下[100秒以后删除]:\n'
+            if None is not _timer:
+                _codes = list(_timer.keys())
+                for i in range(len(_codes)):
+                    _codeQueue = await getSqlite(f'{_codes[i]}')
+                    _msg += f'队列[{_codes[i]},长度[{len(list(_codeQueue))}]]\n'
+            await edit_delete(message, f"{_msg}", 100)
+        except Exception as e:
+            await log(f"❌ 第{e.__traceback__.tb_lineno}行：{e}")  # 打印日志
 
 
 @listener(is_plugin=True, incoming=True, ignore_edited=True)
@@ -199,7 +212,8 @@ async def filters(text):
             if str(_code) in dId.keys():
                 cmd = str(dId[_code]).replace('$url$', _url)
                 await infoLog(f",找到对应指令：{cmd},发送到机器人", _bot)  # 打印日志
-                await bot.send_message(_bot, cmd)
+                # await bot.send_message(_bot, cmd)
+                await addQueue(_code, cmd)
             else:
                 await infoLog(f",未找到对应指令：[{_code}]", _bot)  # 打印日志
         elif 'https' in text:
@@ -209,3 +223,69 @@ async def filters(text):
     except Exception as e:
         errorMsg = f"❌ 第{e.__traceback__.tb_lineno}行：{e}"
         await debugMode(errorMsg)
+
+
+# 队列判断和操作
+# @code 执行的代码
+# @cmd 执行的命令
+async def addQueue(code, cmd):
+    # 获取当前队列的长度
+    _codeQueue = await getSqlite(f'{code}')
+    _timer = await getSqlite(f'timer')
+    if None is _timer:
+        _timer = {f"{code}": f"{getTimes('%Y-%m-%d %H:%M:%S')}"}
+    else:
+        if code not in _timer.keys():
+            _timer[f"{code}"] = getTimes('%Y-%m-%d %H:%M:%S')
+    sqlite[f"{commandDB}.timer"] = _timer
+    if None is _codeQueue:
+        _codeQueue = []
+        sqlite[f"{commandDB}.{code}_timer"] = getTimes('%Y-%m-%d %H:%M:%S')
+    _codeQueue.append(cmd)  # 追加命令
+    sqlite[f"{commandDB}.{code}"] = _codeQueue
+    await log(f",jdCommand _timer ：添加成功")  # 打印日志
+
+
+@scheduler.scheduled_job("interval", seconds=5)
+async def checkScheduled_job():
+    try:
+        _timer = await getSqlite(f'timer')
+        if None is _timer:
+            await log(f",jdCommand _timer ：None")  # 打印日志
+        else:
+            _codes = list(_timer.keys())
+            for i in range(len(_codes)):
+                _codeQueue = await getSqlite(f'{_codes[i]}')
+                if None is _codeQueue:
+                    _timer.remove(_codes[i])
+                else:
+                    _pvalue = _timer.get(_codes[i])
+                    _pvalue = str(_pvalue).replace("{'", '')
+                    _pvalue = str(_pvalue).replace("'}", '')
+                    # 找到队列任务
+                    _codeQueue = await getSqlite(f'{_codes[i]}')
+                    # await log(f",jdCommand _timer _codeQueue ：{_codeQueue}")  # 打印日志
+                    if None is not _codeQueue and len(_codeQueue) > 0:
+                        # 对应值的更新时间
+                        _time_01 = datetime.strptime(str(_pvalue), "%Y-%m-%d %H:%M:%S")
+                        # 追加10分钟
+                        minutes_after_10 = _time_01 + timedelta(minutes=10)
+                        _time_02 = datetime.strptime(getTimes("%Y-%m-%d %H:%M:%S"), "%Y-%m-%d %H:%M:%S")
+                        # 当前时间大于，设计时间加10分钟，则队列可以放行一个
+                        if minutes_after_10 < _time_02:
+                            # await log(f",jdCommand _timer compare ：{_time_02},{minutes_after_10}")  # 打印日志
+                            # await log(f",jdCommand _timer compare ：{minutes_after_10 < _time_02}")  # 打印日志
+                            cTask = _codeQueue[0]
+                            _bot = await getSqlite(f'bot')
+                            await bot.send_message(_bot, cTask)
+                            del _codeQueue[0]
+                            _timer[_codes[i]] = getTimes("%Y-%m-%d %H:%M:%S")
+                            sqlite[f"{commandDB}.timer"] = _timer
+                        # await bot.send_message(_bot, cTask)
+                        # del _codeQueue[0]
+                    elif None is not _codeQueue and len(_codeQueue) == 0:
+                        _timer.remove(_codes[i])
+                        sqlite[f"{commandDB}.timer"] = _timer
+            # await log(f",jdCommand _timer ：{_timer}")  # 打印日志
+    except Exception as e:
+        await log(f"❌ 第{e.__traceback__.tb_lineno}行：{e}")  # 打印日志
