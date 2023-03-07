@@ -13,6 +13,7 @@ import re
 USER_BOT = "5659441760"
 # 调试模式
 DEBUG_MODE = True
+delayMin = 2
 commandDB = 'jdCommand'
 
 
@@ -238,7 +239,7 @@ async def addQueue(code, cmd):
         else:
             if code not in _timer.keys():
                 _time_02 = datetime.strptime(getTimes("%Y-%m-%d %H:%M:%S"), "%Y-%m-%d %H:%M:%S")
-                minutes_after_10 = _time_02 - timedelta(minutes=10)
+                minutes_after_10 = _time_02 - timedelta(minutes=delayMin)
                 _timer[f"{code}"] = minutes_after_10.strftime("%Y-%m-%d %H:%M:%S")
                 # await log(f",jdCommand _timer ：{_time_02}, {minutes_after_10}")  # 打印日志
         sqlite[f"{commandDB}.timer"] = _timer
@@ -250,6 +251,7 @@ async def addQueue(code, cmd):
         await log(f",jdCommand _timer ：添加成功")  # 打印日志
     except Exception as e:
         await log(f"❌ 第{e.__traceback__.tb_lineno}行：{e}")  # 打印日志
+
 
 @scheduler.scheduled_job("interval", seconds=5)
 async def checkScheduled_job():
@@ -274,7 +276,7 @@ async def checkScheduled_job():
                         # 对应值的更新时间
                         _time_01 = datetime.strptime(str(_pvalue), "%Y-%m-%d %H:%M:%S")
                         # 追加10分钟
-                        minutes_after_10 = _time_01 + timedelta(minutes=10)
+                        minutes_after_10 = _time_01 + timedelta(minutes=delayMin)
                         _time_02 = datetime.strptime(getTimes("%Y-%m-%d %H:%M:%S"), "%Y-%m-%d %H:%M:%S")
                         # 当前时间大于，设计时间加10分钟，则队列可以放行一个
                         if minutes_after_10 < _time_02:
@@ -282,7 +284,9 @@ async def checkScheduled_job():
                             # await log(f",jdCommand _timer compare ：{minutes_after_10 < _time_02}")  # 打印日志
                             cTask = _codeQueue[0]
                             _bot = await getSqlite(f'bot')
-                            await bot.send_message(_bot, cTask)
+                            if '.js' in cTask:
+                                cTask += ' -a'
+                            await bot.send_message(_bot, cTask)  # 添加代理执行
                             _codeQueue.pop(0)
                             _timer[_codes[i]] = getTimes("%Y-%m-%d %H:%M:%S")
                             sqlite[f"{commandDB}.timer"] = _timer
