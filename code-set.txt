@@ -23,6 +23,7 @@
 ,jdCommand code-set {"k":"jd_lottery_activityUrl","v":"/cmd task env edit jd_txzj_lottery_id $url$ >/dev/null 2>&1 && task own/shufflewzc_faker2/jd_txzj_lottery.js now"}
 ,jdCommand code-set {"k":"M_WX_TEAM_URL","v":"/cmd task env edit M_WX_TEAM_URL $url$ >/dev/null 2>&1 && task own/shufflewzc_faker2/m_jd_wx_team.js now"}
 ,jdCommand code-set {"k":"M_WX_LUCK_DRAW_URL","v":"/cmd task env edit M_WX_LUCK_DRAW_URL $url$ >/dev/null 2>&1 && task own/shufflewzc_faker2/m_jd_wx_luckDraw.js now"}
+,jdCommand code-set {"k":"M_WX_ADD_CART_URL","v":"/cmd task env edit M_WX_LUCK_DRAW_URL $url$ >/dev/null 2>&1 && task own/shufflewzc_faker2/m_jd_wx_addCart.js now"}
 
 ,jdCommand code-search
 
