@@ -10,7 +10,7 @@ import re
 
 # ⚠ 容器Bot ID 或 用户名（推荐用户名）
 # USER_BOT = 1234567890 或 USER_BOT = "xxxxxx_bot"，注意如果是id不要带引号
-USER_BOT = "5659441760"
+USER_BOT = "1234567890"
 # 调试模式
 DEBUG_MODE = True
 delayMin = 2
