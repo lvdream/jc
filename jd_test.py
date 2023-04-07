@@ -202,7 +202,7 @@ async def filters(text):
             _bot = await getSqlite(f'bot')
             # 将export 之前的部分截取掉
             all = 'export ' + str(text).split('export ')[1]
-            all = str(text).replace('export ', '')
+            all = str(all).replace('export ', '')
             all = str(all).replace('="', '----')
             # 以防最后一个双引号后面还有内容
             all = all.split('"')[0] + '"'
