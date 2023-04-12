@@ -200,7 +200,9 @@ async def filters(text):
             await log(f",text ：{text}")  # 打印日志
             dId = await getSqlite(f'code')
             _bot = await getSqlite(f'bot')
-            all = str(text).replace('export ', '')
+            # 将export 之前的部分截取掉
+            all = 'export ' + str(text).split('export ')[1]
+            all = str(all).replace('export ', '')
             all = str(all).replace('="', '----')
             # 以防最后一个双引号后面还有内容
             all = all.split('"')[0] + '"'
@@ -284,6 +286,7 @@ async def checkScheduled_job():
                             # await log(f",jdCommand _timer compare ：{minutes_after_10 < _time_02}")  # 打印日志
                             cTask = _codeQueue[0]
                             _bot = await getSqlite(f'bot')
+                            ### 不需要代理的，可以注释掉
                             if '.js' in cTask:
                                 cTask += ' -a'
                             await bot.send_message(_bot, cTask)  # 添加代理执行
