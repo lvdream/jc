@@ -5,8 +5,8 @@ from .. import jdbot, chat_id
 
 
 # 格式基本固定，本例子表示从chat_id处接收到包含hello消息后，要做的事情
-@jdbot.on(events.NewMessage(chats=chat_id, pattern=('sa1')))
+@jdbot.on(events.NewMessage(chats=chat_id, pattern=('sa2')))
 # 定义自己的函数名称
 async def hi(event):
     # do something
-    await jdbot.send_message(chat_id, 'sa1')
+    await jdbot.send_message(chat_id, 'sa2')
