@@ -1,4 +1,6 @@
 # 引入库文件，基于telethon
+import time
+
 from telethon import events
 # 从上级目录引入 jdbot,chat_id变量
 from .. import jdbot, chat_id
@@ -10,4 +12,7 @@ from .. import jdbot, chat_id
 async def hi(event):
     # do something
     msg_text = event.raw_text.split(' ')
-    await jdbot.send_message(chat_id, 'oo'.join(msg_text))
+    msg = await jdbot.send_message(chat_id, 'oo'.join(msg_text))
+    time.sleep(5)
+    msg = await jdbot.edit_message(msg, '对话已取消')
+
