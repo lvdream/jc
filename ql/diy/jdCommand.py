@@ -1,20 +1,24 @@
 # 引入库文件，基于telethon
+import asyncio
 import time
 import json
 from telethon import events
 # 从上级目录引入 jdbot,chat_id变量
-from .. import jdbot, chat_id
+from .. import jdbot, chat_id, logger
 from ..bot.utils import cmd, env_manage_QL, TASK_CMD, AUTH_FILE
-from .jdUtil import sqlite, commandDB
+from .jdUtil import sqlite, commandDB, actionMonitor, resetMonitor, sendHelp
 
-_cmd = ['proxy', 'bot', 'sub']
+_cmd = ['p', 't', 's', 'm', 'mr', 'sr', 'q', 'sa']
+defdict = {
+    'm': actionMonitor,
+    'mr': resetMonitor
+}
 
 
 async def getSqlite(value):
     return sqlite.get(f"{commandDB}.{value}")
 
 
-# 格式基本固定，本例子表示从chat_id处接收到包含hello消息后，要做的事情
 @jdbot.on(events.NewMessage(chats=chat_id, pattern=r'^/jdCommand'))
 # 定义自己的函数名称
 async def main(event):
@@ -24,23 +28,30 @@ async def main(event):
     msg_text = event.raw_text.split(' ')
     msg = await jdbot.send_message(chat_id, '命令已经收到，准备执行')
     if len(msg_text) == 1:
-        checkCmd(msg_text, msg)
+        _msg = await checkCmd(msg_text, msg)
+        await jdbot.edit_message(msg, _msg)
+        return
     else:
+        _rs = await checkCmd(msg_text, msg)
+        logger.info(_rs)
+        if None is not _rs:
+            await jdbot.edit_message(msg, _rs)
+        else:
+            await jdbot.edit_message(msg, '开始执行')
+        # sqlite[f"{commandDB}.monitor"] = '2323'
+        # ll = getSqlite(f"{commandDB}.monitor")
+        # await jdbot.send_message(chat_id, ll)
+        # res = env_manage_QL('search', 'test11', auth['token'])
+        # res['data'][0]['value'] = 'abcd'
+        # res['data'][0]['remarks'] = 'mnbv'
+        # env_manage_QL(
+        #     'edit', res['data'][0], auth['token'])
+        # await cmd('task raw_main_xingkong.js -a')
+        # time.sleep(3)
+        # msg = await jdbot.edit_message(msg, '开始执行')
 
-        sqlite[f"{commandDB}.monitor"] = '2323'
-        ll = getSqlite(f"{commandDB}.monitor")
-        await jdbot.send_message(chat_id, ll)
-        res = env_manage_QL('search', 'test11', auth['token'])
-        res['data'][0]['value'] = 'abcd'
-        res['data'][0]['remarks'] = 'mnbv'
-        env_manage_QL(
-            'edit', res['data'][0], auth['token'])
-        await cmd('task raw_main_xingkong.js -a')
-        time.sleep(3)
-        msg = await jdbot.edit_message(msg, '开始执行')
 
-
-def checkCmd(msg_text, msg):
+async def checkCmd(msg_text, msg):
     """
     检查输入命令，执行后续的逻辑
     :param msg_text 执行命令字符串
@@ -49,8 +60,16 @@ def checkCmd(msg_text, msg):
     """
     try:
         _incmd = msg_text[1]
-    except:
-        sendHelp(msg)
+        logger.info(_incmd)
+        if _incmd in _cmd:
+            _a = _cmd.index(_incmd)
+            fun = defdict.get(_incmd)
+            return await fun(msg_text)
+        else:
+            return sendHelp()
+    except Exception as e:
+        logger.error(f"❌ 第{e.__traceback__.tb_lineno}行：{e}")
+        return sendHelp()
 
 
 def getProxy():
@@ -71,15 +90,3 @@ def setProxy(cmd):
         sqlite[f"{commandDB}.proxy"] = '0'
     if cmd == 'off':
         sqlite[f"{commandDB}.proxy"] = None
-
-
-def sendHelp(msg):
-    """
-    发送默认帮助说明
-    :param msg:
-    :return:
-    """
-    _msg = '\n**无效指令**\njdCommand 指令设置'
-    _msg += "\n**设置代理开关[默认:关]**:\n `/jdCommand proxy on/off`"
-    _msg += "\n**设置接收订阅地址**:\n `/jdCommand`"
-    await jdbot.edit_message(msg, _msg)
