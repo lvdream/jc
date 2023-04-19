@@ -6,12 +6,13 @@ from telethon import events
 # 从上级目录引入 jdbot,chat_id变量
 from .. import jdbot, chat_id, logger
 from ..bot.utils import cmd, env_manage_QL, TASK_CMD, AUTH_FILE
-from .jdUtil import sqlite, commandDB, actionMonitor, resetMonitor, sendHelp
+from .jdUtil import sqlite, commandDB, actionMonitor, resetMonitor,proxy, sendHelp
 
 _cmd = ['p', 't', 's', 'm', 'mr', 'sr', 'q', 'sa']
 defdict = {
     'm': actionMonitor,
-    'mr': resetMonitor
+    'mr': resetMonitor,
+    'p': proxy
 }
 
 
@@ -36,6 +37,8 @@ async def main(event):
         logger.info(_rs)
         if None is not _rs:
             await jdbot.edit_message(msg, _rs)
+            time.sleep(5)
+            await jdbot.delete_messages(chat_id, msg)
         else:
             await jdbot.edit_message(msg, '开始执行')
         # sqlite[f"{commandDB}.monitor"] = '2323'
